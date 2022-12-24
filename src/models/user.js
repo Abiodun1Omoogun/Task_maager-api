@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
             if (value.length < 8) {
                 throw new Error('Password should be more than 8 characters!');
             } else if (value.toLowerCase() == 'password') {
-                throw new Error('Password cannot be password, come on man!');
+                throw new Error('Password cannot be password!');
             }
         },
     },
