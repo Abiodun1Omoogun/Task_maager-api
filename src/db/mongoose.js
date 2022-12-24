@@ -102,21 +102,21 @@ userSchema.methods.toJSON = function() {
 };
 
 // Hashing the password before saving
-userSchema.pre("save", async function(next) {
+userSchema.pre('save', async function(next) {
     const user = this;
-    if (user.isModified("password")) {
+    if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
     }
     next();
 });
 
 // Remove all tasks of a user, if user is deleted
-userSchema.pre("remove", async function(next) {
+userSchema.pre('remove', async function(next) {
     const user = this;
     await Task.deleteMany({ owner: user._id });
     next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;
 
