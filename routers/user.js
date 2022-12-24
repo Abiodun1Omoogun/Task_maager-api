@@ -65,4 +65,39 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     }
 });
 
+// Read, Update, and Delete operations on User profile
+router.get('/users/', auth, async (req, res) => {
+    res.send(req.user);
+});
 
+// Update
+router.patch('/users/me', auth, async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name', 'email', 'password', 'age'];
+    const isValidOperation = updates.every((update) =>
+        allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+        return res.status(401).send({ error: 'Invalid updates' });
+    }
+    try {
+        updates.forEach((update) => (req.user[update] = req.body[update]));
+        await req.user.save();
+        res.status(201).send(req.user);
+    } catch (e) {
+        res.status(404).send({
+            e,
+        });
+    }
+});
+
+// Delete
+router.delete('/users/me', auth, async (req, res) => {
+    try {
+        await req.user.remove();
+        sendCancelationEmail(req.user.email, req.user.name);
+        res.send(req.user);
+    } catch (e) {
+        res.status(500).send({ e: 'Catch Error', e });
+    }
+});
